@@ -25,4 +25,4 @@ fi
 # Submit array job with correct resources
 sbatch --account=nn8029k --time=8:00:00 --mem=32G --cpus-per-task=8 -N 1 \
   --array=2-${LAST_LINE} \
-  "${SCRIPT_DIR}/trimmomatic_array_illuminaclip_2.sh" "$SAMPLES_TSV" "$OUTDIR"
+  "${SCRIPT_DIR}/trimmomatic_array_illuminaclip.sh" "$SAMPLES_TSV" "$OUTDIR"

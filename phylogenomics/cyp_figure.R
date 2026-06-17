@@ -1,73 +1,77 @@
 
-# Check if "devtools" installed
-if("devtools" %in% rownames(installed.packages()) == FALSE){ 
-  install.packages("devtools")
-}
-
-# install from github
-devtools::install_github("g3viz/g3viz", force = TRUE)
-
+library(trackViewer)
 library(g3viz)
-
-mutation.dat <- readMAF("cyp51A_mutations.maf",
-                        gene.symbol.col = "Hugo_Symbol",
-                        variant.class.col = "Variant_Classification",
-                        protein.change.col = "Protein_Change")
-
-plot.options <- g3Lollipop.options(
-  title.text = "Aspergillus fumigatus CYP51A mutations",
-  legend.title = "Azole susceptibility",
-  lollipop.pop.info.limit = 1.5,
-  lollipop.pop.info.color = "#ffffff",
-  lollipop.pop.min.size = 8,
-  lollipop.pop.max.size = 20,
-  lollipop.pop.info.dy = "0.35em",
-  chart.width = 1200
-)
-
-plot <- g3Lollipop(
-  mutation.dat,
-  uniprot.id = "Q4WNT5",
-  factor.col = "Phenotype",
-  plot.options = plot.options,
-  output.filename = "cyp51A_plot"
-)
-
-
-plot
-
-
-###
 library(httr)
 library(jsonlite)
+library(dplyr)
 
 url <- "https://rest.uniprot.org/uniprotkb/Q4WNT5.json"
-
 res <- fromJSON(content(GET(url), "text", encoding = "UTF-8"))
 
-protein_length <- res$sequence$length
+mutation.dat <- readMAF("cyp51A_mutations.maf",
+                        gene.symbol.col     = "Hugo_Symbol",
+                        variant.class.col   = "Variant_Classification",
+                        protein.change.col  = "Protein_Change")
 
+## 1. Agrupar por posición: contar muestras y resolver el fenotipo --------
+mut_summary <- mutation.dat %>%
+  group_by(AA_Position) %>%
+  summarise(
+    n_samples = n_distinct(Sample_ID),
+    n_phenotypes = n_distinct(Phenotype),
+    Phenotype = names(sort(table(Phenotype), decreasing = TRUE))[1],
+    Protein_Change = first(Protein_Change),
+    .groups = "drop"
+  ) %>%
+  arrange(AA_Position)
+
+if (any(mut_summary$n_phenotypes > 1)) {
+  warning("Hay posiciones con más de un fenotipo entre muestras distintas: ",
+          paste(mut_summary$Protein_Change[mut_summary$n_phenotypes > 1], collapse = ", "),
+          ". Se usó el fenotipo más frecuente en cada caso.")
+}
+
+snp <- mut_summary$AA_Position
+
+## 2. Construir sample.gr con score = conteo y color = fenotipo ------------
+sample.gr <- GRanges("chr1",
+                     IRanges(snp, width = 1, names = mut_summary$Protein_Change))
+
+sample.gr$score <- mut_summary$n_samples
+
+## Mapeo de color por fenotipo (valores reales confirmados en los datos)
+pheno_palette <- c(
+  "Resistant"     = "firebrick",
+  "Intermediate"  = "darkorange",
+  "Susceptible"   = "#A2CD5A",
+  "Unknown"       = "grey70"
+)
+
+sample.gr$color <- pheno_palette[mut_summary$Phenotype]
+sample.gr$color[is.na(sample.gr$color)] <- "grey70" 
+sample.gr$label.parameter.rot <- 45
+sample.gr$label.parameter.cex <- 0.6
+
+## Mostrar el conteo de muestras DENTRO de cada bolita
+sample.gr$node.label <- as.character(sample.gr$score)
+sample.gr$node.label.col <- "white"
+sample.gr$node.label.cex <- 0.8
+
+## 3. Features de fondo (dominio / TM / sitio de unión) ---------------------
 feat <- res$features
+feat_bg <- feat[feat$type %in% c("Chain", "Transmembrane", "Binding site"), ]
 
-dom <- feat[feat$type == "Domain", ]
+features.gr <- GRanges("chr1",
+                       IRanges(start = feat_bg$location$start$value,
+                               end   = feat_bg$location$end$value,
+                               names = feat_bg$type))
+features.gr$fill <- c("lightblue", "orange", "yellow")[seq_len(nrow(feat_bg))]
 
-protein_domains <- data.frame(
-  domain = dom$description,
-  start = dom$location$start$value,
-  end = dom$location$end$value,
-  stringsAsFactors = FALSE
-)
+## 4. Graficar ----------------------------------------------------------------
+lolliplot(sample.gr, features.gr,
+          ranges = GRanges("chr1", IRanges(1, 515)),
+          yaxis = TRUE,
+          legend = list(labels = names(pheno_palette),
+                        col = pheno_palette,
+                        fill = pheno_palette))
 
-protein_domains$length <- protein_length
-
-
-plot <- g3Lollipop(
-  mutation.dat,
-  gene.symbol = "CYP51A",
-  protein.domains = protein_domains,
-  factor.col = "Phenotype",
-  plot.options = plot.options,
-  output.filename = "cyp51A_plot"
-)
-
-plot

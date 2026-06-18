@@ -53,12 +53,13 @@ pheno_palette <- c(
 sample.gr$color <- pheno_palette[mut_summary$Phenotype]
 sample.gr$color[is.na(sample.gr$color)] <- "grey70" 
 sample.gr$label.parameter.rot <- 45
+sample.gr$cex <- 1.5
 sample.gr$label.parameter.cex <- 0.8
 
 ## Mostrar el conteo de muestras DENTRO de cada bolita
 sample.gr$node.label <- as.character(sample.gr$score)
 sample.gr$node.label.col <- "white"
-sample.gr$node.label.cex <- 0.8
+sample.gr$node.label.cex <- 1.2
 
 ## 3. Features de fondo---------------------
 feat <- res$features
@@ -89,7 +90,7 @@ features.gr$fill <- c("lightblue", "#FFB6C1", "#836FFF", "#FFD700")[seq_len(leng
 pdf("lolliplot_cyp.pdf", width = 15, height = 5)
 lolliplot(sample.gr, features.gr,
           ranges = GRanges("chr1", IRanges(1, 515)),
-          yaxis = TRUE,
+          yaxis = FALSE,
           legend = list(labels = names(pheno_palette),
                         col = pheno_palette,
                         fill = pheno_palette))

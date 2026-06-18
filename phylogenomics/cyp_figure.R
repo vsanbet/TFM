@@ -1,9 +1,11 @@
-
+BiocManager::install('trackViewer')
+install.packages("g3viz")
 library(trackViewer)
 library(g3viz)
 library(httr)
 library(jsonlite)
 library(dplyr)
+remotes::install_github("g3viz/g3viz", force = TRUE)
 
 url <- "https://rest.uniprot.org/uniprotkb/Q4WNT5.json"
 res <- fromJSON(content(GET(url), "text", encoding = "UTF-8"))
@@ -12,6 +14,7 @@ mutation.dat <- readMAF("cyp51A_mutations.maf",
                         gene.symbol.col     = "Hugo_Symbol",
                         variant.class.col   = "Variant_Classification",
                         protein.change.col  = "Protein_Change")
+
 
 ## 1. Agrupar por posición: contar muestras y resolver el fenotipo --------
 mut_summary <- mutation.dat %>%
@@ -50,28 +53,49 @@ pheno_palette <- c(
 sample.gr$color <- pheno_palette[mut_summary$Phenotype]
 sample.gr$color[is.na(sample.gr$color)] <- "grey70" 
 sample.gr$label.parameter.rot <- 45
-sample.gr$label.parameter.cex <- 0.6
+sample.gr$label.parameter.cex <- 0.8
 
 ## Mostrar el conteo de muestras DENTRO de cada bolita
 sample.gr$node.label <- as.character(sample.gr$score)
 sample.gr$node.label.col <- "white"
 sample.gr$node.label.cex <- 0.8
 
-## 3. Features de fondo (dominio / TM / sitio de unión) ---------------------
+## 3. Features de fondo---------------------
 feat <- res$features
-feat_bg <- feat[feat$type %in% c("Chain", "Transmembrane", "Binding site"), ]
 
+# Filtrar SIN "HR-1"
+feat_bg <- feat[feat$type %in% c("Chain", "Transmembrane"), ]
+
+# Crear GRanges con los features reales
 features.gr <- GRanges("chr1",
                        IRanges(start = feat_bg$location$start$value,
                                end   = feat_bg$location$end$value,
                                names = feat_bg$type))
-features.gr$fill <- c("lightblue", "orange", "yellow")[seq_len(nrow(feat_bg))]
+
+# Añadir dominios manualmente
+# HR1
+features.gr <- c(features.gr,
+                 GRanges("chr1", IRanges(110, 133, names = "HR-1")))
+
+#HR2
+features.gr <- c(features.gr,
+                 GRanges("chr1", IRanges(447, 461, names = "HR-2")))
+
+
+# Asignar colores (uno para cada feature)
+features.gr$fill <- c("lightblue", "#FFB6C1", "#836FFF", "#FFD700")[seq_len(length(features.gr))]
 
 ## 4. Graficar ----------------------------------------------------------------
+pdf("lolliplot_cyp.pdf", width = 15, height = 5)
 lolliplot(sample.gr, features.gr,
           ranges = GRanges("chr1", IRanges(1, 515)),
           yaxis = TRUE,
           legend = list(labels = names(pheno_palette),
                         col = pheno_palette,
                         fill = pheno_palette))
+
+
+dev.off()
+
+cat("PDF creado: lolliplot_cyp.pdf\n")
 

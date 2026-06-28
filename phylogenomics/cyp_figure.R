@@ -1,11 +1,10 @@
-BiocManager::install('trackViewer')
-install.packages("g3viz")
+# BiocManager::install('trackViewer')
 library(trackViewer)
 library(g3viz)
 library(httr)
 library(jsonlite)
 library(dplyr)
-remotes::install_github("g3viz/g3viz", force = TRUE)
+# remotes::install_github("g3viz/g3viz", force = TRUE)
 
 url <- "https://rest.uniprot.org/uniprotkb/Q4WNT5.json"
 res <- fromJSON(content(GET(url), "text", encoding = "UTF-8"))
@@ -16,14 +15,13 @@ mutation.dat <- readMAF("cyp51A_mutations.maf",
                         protein.change.col  = "Protein_Change")
 
 
-## 1. Agrupar por posición: contar muestras y resolver el fenotipo --------
+## 1. Agrupar por cambio: contar muestras y resolver el fenotipo --------
 mut_summary <- mutation.dat %>%
-  group_by(AA_Position) %>%
+  group_by(Protein_Change, AA_Position) %>% 
   summarise(
-    n_samples = n_distinct(Sample_ID),
+    n_samples    = n_distinct(Sample_ID),
     n_phenotypes = n_distinct(Phenotype),
-    Phenotype = names(sort(table(Phenotype), decreasing = TRUE))[1],
-    Protein_Change = first(Protein_Change),
+    Phenotype    = names(sort(table(Phenotype), decreasing = TRUE))[1],
     .groups = "drop"
   ) %>%
   arrange(AA_Position)
@@ -73,18 +71,24 @@ features.gr <- GRanges("chr1",
                                end   = feat_bg$location$end$value,
                                names = feat_bg$type))
 
-# Añadir dominios manualmente
-# HR1
+# Añadir dominios manualment
+#N-ter
 features.gr <- c(features.gr,
-                 GRanges("chr1", IRanges(110, 133, names = "HR-1")))
+                 GRanges("chr1", IRanges(1, 6, names = "N-terminal")))
 
-#HR2
+
+
+# ovillo 1
 features.gr <- c(features.gr,
-                 GRanges("chr1", IRanges(447, 461, names = "HR-2")))
+                 GRanges("chr1", IRanges(39, 61, names = "ovillo 1")))
+
+# ovillo 2
+features.gr <- c(features.gr,
+                 GRanges("chr1", IRanges(71, 91, names = "ovillo 2")))
 
 
 # Asignar colores (uno para cada feature)
-features.gr$fill <- c("lightblue", "#FFB6C1", "#836FFF", "#FFD700")[seq_len(length(features.gr))]
+features.gr$fill <- c("lightblue", "#FFB6C1", "#836FFF", "#FFD700", "#696969" )[seq_len(length(features.gr))]
 
 ## 4. Graficar ----------------------------------------------------------------
 pdf("lolliplot_cyp.pdf", width = 15, height = 5)

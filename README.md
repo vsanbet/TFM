@@ -44,6 +44,8 @@ Pasos previos a los análisis filogenómicos y de poblaciones.
 - **Plink** MAF 0.05 → **45,034 SNPs** (final filtered)
 - **Plink** LD pruning `--indep-pairwise 0.5 kb 1 0.1` → 249,278 SNPs
 
+![Imagen de la primera parte de la pipeline](vsanbet/TFM/pipeline_images/pipeline_esquema_1.png)
+
 ### Metadata processing
 Scripts para el procesamiento de metadatos y creación de un nuevo fichero de metadata.
 
@@ -59,9 +61,14 @@ Scripts para el estudio filogenómico de las muestras y del gen *Cyp51A*
 - **IQ-TREE** — filogenia del gen
 - Visualización con **ggtree** y **g3viz** (R)
 
+![Imagen de la segunda parte de la pipeline](vsanbet/TFM/pipeline_images/pipeline_esquema_2.png)
+
 ### Population structure
 - **Plink PCA**
 - **Admixture** K=1-10, 10 runs/K
 - **CLUMPAK** K=5
 - Visualización con **R** (ggtree, custom scripts)
+
+![Imagen de la tercera parte de la pipeline](vsanbet/TFM/pipeline_images/pipeline_esquema_3.png)
+
 

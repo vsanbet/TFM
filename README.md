@@ -2,6 +2,7 @@
 Scripts utilizados para el análisis de 403 muestras de *A. fumigatus* (150 internacionales y 253 de colaboradores). Esta pipeline incluye pasos de procesamiento de las muestras general, estudio filogenómico y de la esctura poblacional de las muestras.
 
 ## Estructura del repositorio
+```
 pipeline/
 ├── general_pipeline
   │   ├── mapping
@@ -14,6 +15,6 @@ pipeline/
 ├── metadata_processing
 ├── phylogenomics
 └──  population_study
-
+```
 
 ## Pipeline

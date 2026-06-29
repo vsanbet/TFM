@@ -4,17 +4,17 @@ Scripts utilizados para el análisis de 403 muestras de *A. fumigatus* (150 inte
 ## Estructura del repositorio
 ```
 pipeline/
-├── general_pipeline
-  │   ├── mapping
-  │   ├── post_filtering
-  │   ├── qc_mapping
-  │   ├── qc_vc
-  │   ├── quality_control
-  │   ├── trimming
-  │   ├── v_calling_aspergillus
-├── metadata_processing
-├── phylogenomics
-└──  population_study
+├── general_pipeline/
+  │   ├── mapping/
+  │   ├── post_filtering/
+  │   ├── qc_mapping/
+  │   ├── qc_vc/
+  │   ├── quality_control/
+  │   ├── trimming/
+  │   ├── v_calling_aspergillus/
+├── metadata_processing/
+├── phylogenomics/
+└──  population_study/
 ```
 
 ## Pipeline

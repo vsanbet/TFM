@@ -3,7 +3,7 @@ Scripts utilizados para el análisis de 403 muestras de *A. fumigatus* (150 inte
 
 ## Estructura del repositorio
 ```
-pipeline/
+pipeline
 ├── general_pipeline/
   │   ├── mapping/
   │   ├── post_filtering/

@@ -38,6 +38,9 @@ snp <- mut_summary$AA_Position
 sample.gr <- GRanges("chr1",
                      IRanges(snp, width = 1, names = mut_summary$Protein_Change))
 
+mask_idx <- which(mut_summary$Protein_Change == "p.L98H")
+names(sample.gr)[mask_idx] <- ""
+
 sample.gr$score <- mut_summary$n_samples
 
 ## Mapeo de color por fenotipo (valores reales confirmados en los datos)
@@ -50,7 +53,7 @@ pheno_palette <- c(
 
 sample.gr$color <- pheno_palette[mut_summary$Phenotype]
 sample.gr$color[is.na(sample.gr$color)] <- "grey70" 
-sample.gr$label.parameter.rot <- 45
+sample.gr$label.parameter.rot <- -90
 sample.gr$cex <- 1.5
 sample.gr$label.parameter.cex <- 0.8
 
@@ -58,6 +61,7 @@ sample.gr$label.parameter.cex <- 0.8
 sample.gr$node.label <- as.character(sample.gr$score)
 sample.gr$node.label.col <- "white"
 sample.gr$node.label.cex <- 1.2
+sample.gr$node.label.rot <- -90
 
 ## 3. Features de fondo---------------------
 feat <- res$features
@@ -91,7 +95,7 @@ features.gr <- c(features.gr,
 features.gr$fill <- c("lightblue", "#FFB6C1", "#836FFF", "#FFD700", "#696969" )[seq_len(length(features.gr))]
 
 ## 4. Graficar ----------------------------------------------------------------
-pdf("lolliplot_cyp.pdf", width = 15, height = 5)
+pdf("lolliplot_cyp.pdf", width = 10, height = 5)
 lolliplot(sample.gr, features.gr,
           ranges = GRanges("chr1", IRanges(1, 515)),
           yaxis = FALSE,
@@ -104,3 +108,12 @@ dev.off()
 
 cat("PDF creado: lolliplot_cyp.pdf\n")
 
+png("lolliplot_cyp.png", width = 10, height = 5, units = "in", res = 300)
+lolliplot(sample.gr, features.gr,
+          ranges = GRanges("chr1", IRanges(1, 515)),
+          yaxis = FALSE,
+          legend = list(labels = names(pheno_palette),
+                        col = pheno_palette,
+                        fill = pheno_palette))
+dev.off()
+cat("PNG creado: lolliplot_cyp.png\n")

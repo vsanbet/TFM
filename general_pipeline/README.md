@@ -1,8 +1,8 @@
 # general_pipeline
 
-Pipeline bioinformático general del TFM: procesa lecturas Illumina paired-end (WGS) desde los FASTQ crudos hasta un VCF de variantes filtrado, listo para los análisis poblacionales (carpeta `population_study`). Está pensado para ejecutarse en clusters HPC con gestor **SLURM** (scripts probados en SAGA, cuenta `nn8029k`; algunos módulos tienen también una versión para CESGA) y usa `sbatch`/dependencias (`--dependency=afterok`) para encadenar pasos.
+Pipeline bioinformático general del TFM: procesa lecturas Illumina paired-end (WGS) desde los FASTQ crudos hasta un VCF de variantes filtrado, listo para los análisis poblacionales (carpeta `population_study`).
 
-El flujo de trabajo, en orden, es:
+Flujo de trabajo:
 
 ```
 quality_control  →  trimming  →  mapping  →  qc_mapping  →  v_calling_aspergillus  →  qc_vc  →  post_filtering
@@ -10,9 +10,6 @@ quality_control  →  trimming  →  mapping  →  qc_mapping  →  v_calling_as
 ```
 
 ## Requisitos
-
-Software cargado vía `module load` en el cluster (o disponible en el `PATH`):
-
 - FastQC, MultiQC
 - Trimmomatic 0.39
 - BWA 0.7.18, SAMtools 1.18+
@@ -21,9 +18,6 @@ Software cargado vía `module load` en el cluster (o disponible en el `PATH`):
 - BCFtools, VCFtools, tabix
 - Python 3 (`pandas`, `numpy`, `cyvcf2`) — entorno conda `vcf_env`
 - R (`ggplot2`, `data.table`, `gridExtra`)
-
-> Varios scripts contienen rutas absolutas del cluster (`/cluster/projects/nn8029k/...`) y cuentas SLURM (`--account=nn8029k`) específicas del proyecto. Hay que adaptarlas antes de reutilizar el pipeline en otro entorno.
-
 ---
 
 ## 1. `quality_control/`
@@ -43,9 +37,6 @@ sbatch quality_control/wrapper_final.sh \
   --multiqc-dir multiqc \
   --full-results-path /ruta/de/salida
 ```
-
-El TSV de muestras tiene formato `sample<TAB>read1<TAB>read2` (sin cabecera, una línea por muestra).
-
 ---
 
 ## 2. `trimming/`
@@ -58,8 +49,6 @@ Recorte y filtrado de calidad de las lecturas con Trimmomatic (modo *paired-end*
 | `trimmomatic_array_illuminaclip.sh` | `ILLUMINACLIP:TruSeq3-PE.fa:2:30:10` + `HEADCROP:15` + `CROP:200` + `TRAILING:25` + `MINLEN:45` (versión final, con adaptadores TruSeq3, `TruSeq3-PE.fa` incluido). |
 | `trimmomatic_array_no_crop.sh` | Sin recorte de longitud, solo `MINLEN:2` (control). |
 | `trim15bp.sh` | Versión no-array (bucle secuencial) equivalente a `HEADCROP:15`, para pruebas puntuales. |
-
-Lanzadores (*wrappers*), que calculan el rango del array a partir del TSV y llaman a `sbatch`:
 
 ```bash
 bash trimming/run_trimmomatic.sh samples.tsv outdir/          # usa trimmomatic_array_illuminaclip.sh
@@ -193,5 +182,3 @@ Script independiente para procesar la muestra *outgroup* (SRA `SRR11363406`) con
 sbatch map_vcal_outgroup.sh
 ```
 
-(Rutas de referencia, FASTQ y salida están fijadas dentro del script; hay que editarlas si cambia la ubicación de los datos.)
-readme de esta parte :)

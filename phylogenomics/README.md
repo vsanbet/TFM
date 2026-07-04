@@ -9,8 +9,6 @@ pip install biopython pandas --break-system-packages
 R: `ggtree`, `ape`, `tidyverse`, `readODS`, `pheatmap`, `trackViewer`, `g3viz`, `Polychrome`, `colorBlindness`, `RColorBrewer`
 Otros: IQ-TREE 2, BCFtools, SAMtools
 
-> Rutas hardcodeadas de las máquinas del TFM (`/mnt/c/Users/Valeria/...`); adaptar antes de reutilizar.
-
 ## Scripts
 
 | Script | Función |

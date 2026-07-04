@@ -2,14 +2,11 @@
 
 Scripts de Python para construir y curar el metadata de la cohorte (`Afum_metadata.ods`): fusión de datos de distintas fuentes (SRA, colaboradores, ADMIXTURE, mutaciones de *cyp51A*) y reconciliación de nombres de muestra entre datasets.
 
-No es un pipeline secuencial, son scripts puntuales usados durante el TFM para resolver cruces de datos concretos.
 
 ## Requisitos
 ```bash
 pip install pandas biopython thefuzz odfpy --break-system-packages
 ```
-
-> Los scripts tienen rutas absolutas hardcodeadas de las máquinas usadas en el TFM (`/mnt/c/Users/Valeria/...`, `/home/bettini/...`). Hay que adaptarlas antes de reutilizarlos.
 
 ## Scripts
 

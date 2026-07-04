@@ -9,7 +9,6 @@ pip install biopython numpy pandas scipy matplotlib odfpy --break-system-package
 R: `ggplot2`, `dplyr`, `tidyr`, `readODS`, `ggtext`, `plotly`
 Otros: PLINK, ADMIXTURE 1.3.0, CLUMPAK (solo para `clustering.R`)
 
-> Rutas hardcodeadas de las máquinas del TFM (`C:/Users/Valeria/...`); adaptar antes de reutilizar.
 
 ## Scripts
 

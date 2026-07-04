@@ -23,8 +23,6 @@ VCF filtrado (Plink)┤                                              ├─→ f
 pip install biopython numpy pandas scipy matplotlib odfpy --break-system-packages
 \```
 
-> **Nota:** los scripts en R (`clustering.R`, `cv_graph.R`, `plink_pca.R`) se ejecutaron de forma interactiva durante el TFM y contienen rutas absolutas de la máquina local de la autora (`C:/Users/Valeria/Desktop/...`), así como valores fijados a mano (columnas `V6:V10` para K=5, IDs de muestras españolas en negrita, paletas de color por cluster). Antes de reutilizarlos hay que adaptar rutas, `K` y las columnas de metadata a los datos de cada análisis.
-
 ---
 
 ## 1. `run_admixture.sh`
@@ -39,7 +37,6 @@ pip install biopython numpy pandas scipy matplotlib odfpy --break-system-package
 sbatch run_admixture.sh
 \```
 
-Antes de lanzarlo, edita `INPUT` (ruta al `.bed` de PLINK, sin extensión) y `OUTDIR` dentro del script.
 
 ---
 

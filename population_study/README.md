@@ -92,7 +92,6 @@ Qué hace `main()`:
 4. **Reordenación de colores** — reasigna las columnas del Q-matrix (que ADMIXTURE numera de forma arbitraria) al número de `Our Cluster` con mayor solapamiento, para que un mismo color represente siempre el mismo grupo genético en toda la figura.
 5. **Figura** — dibuja tres paneles alineados por muestra: cladograma, columna de puntos coloreados por `Our Cluster` y barras apiladas de ancestría (K=5 por defecto), con leyenda común.
 
-Configuración (constantes al inicio del script, sección `CONFIG`): `TREE_FILE`, `FAM_FILE`, `Q_FILE_PATTERN`, `N_RUNS`, `K`, `META_FILE`, `META_SHEET`, `META_CLUSTER_COL`, `OUTGROUP_NAME`, `OUT_PREFIX`.
 
 \```bash
 python3 plot_tree_admixture.py
